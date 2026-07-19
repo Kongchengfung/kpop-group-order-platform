@@ -4,10 +4,105 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  reservations Reservation[]
+}
+
+
+model KpopGroup {
+  id              Int      @id @default(autoincrement())
+  name            String
+  memberCount     Int
+
+  members Member[]
+  albums  Album[]
+}
+
+
+model Member {
+  id        Int @id @default(autoincrement())
+  name      String
+
+  groupId Int
+  group   KpopGroup @relation(fields: [groupId], references: [id])
+
+  slots GroupOrderSlot[]
+}
+
+
+model Album {
+  id          Int @id @default(autoincrement())
+  name        String
+  version     String?
+  releaseDate DateTime?
+
+  groupId Int
+  group   KpopGroup @relation(fields: [groupId], references: [id])
+
+  groupOrders GroupOrder[]
+}
+
+
+model Store {
+  id   Int @id @default(autoincrement())
+  name String
+
+  groupOrders GroupOrder[]
+}
+
+
+model GroupOrder {
+  id        Int @id @default(autoincrement())
+
+  albumId Int
+  album   Album @relation(fields: [albumId], references: [id])
+
+  storeId Int
+  store   Store @relation(fields: [storeId], references: [id])
+
+  deadline DateTime
+  status   String
+
+  slots GroupOrderSlot[]
+}
+
+
+model GroupOrderSlot {
+  id Int @id @default(autoincrement())
+
+  groupOrderId Int
+  groupOrder   GroupOrder @relation(fields: [groupOrderId], references: [id])
+
+  memberId Int
+  member   Member @relation(fields: [memberId], references: [id])
+
+  reservation Reservation?
+}
+
+
+model Reservation {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+
+  slotId Int @unique
+  slot GroupOrderSlot @relation(fields: [slotId], references: [id])
+
+  status String
+  createdAt DateTime @default(now())
 }
