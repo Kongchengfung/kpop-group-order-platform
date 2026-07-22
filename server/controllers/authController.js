@@ -1,4 +1,4 @@
-const authService = require("../services/authServices");
+const authService = require("../services/authService");
 
 const register = async (req, res) => {
     try {
@@ -33,6 +33,45 @@ const register = async (req, res) => {
     }
 };
 
+const login = async (req, res) => {
+
+    try {
+
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({
+                message: "Email and password are required."
+            });
+        }
+
+        const result = await authService.loginUser({
+            email,
+            password
+        });
+
+        res.json({
+            message: "Login successful.",
+            token: result.token,
+            user: {
+                id: result.user.id,
+                username: result.user.username,
+                email: result.user.email,
+                role: result.user.role
+            }
+        });
+
+    } catch (error) {
+
+        res.status(401).json({
+            message: error.message
+        });
+
+    }
+
+};
+
 module.exports = {
-    register
+    register,
+    login
 };
