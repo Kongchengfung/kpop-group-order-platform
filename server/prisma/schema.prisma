@@ -40,6 +40,8 @@ model KpopGroup {
   name            String
   memberCount     Int
 
+  imageUrl String?
+
   members Member[]
   albums  Album[]
 }
@@ -48,6 +50,8 @@ model KpopGroup {
 model Member {
   id        Int @id @default(autoincrement())
   name      String
+
+  imageUrl String?
 
   groupId Int
   group   KpopGroup @relation(fields: [groupId], references: [id])

@@ -4,6 +4,7 @@ const prisma = require("./config/prisma");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const groupRoutes = require("./routes/groupRoutes");
+const memberRoutes = require("./routes/memberRoutes");
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/groups", groupRoutes);
+app.use("/api/members", memberRoutes);
 
 app.get("/", (req, res) => {
     res.json({
