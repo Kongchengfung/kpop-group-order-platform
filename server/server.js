@@ -5,6 +5,8 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const groupRoutes = require("./routes/groupRoutes");
 const memberRoutes = require("./routes/memberRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const groupOrderRoutes = require("./routes/groupOrderRoutes");
 
 const app = express();
 
@@ -15,6 +17,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/members", memberRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/group-orders", groupOrderRoutes);
 
 app.get("/", (req, res) => {
     res.json({

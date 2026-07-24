@@ -17,16 +17,30 @@ enum UserRole {
   ADMIN
 }
 
+enum GroupOrderStatus {
+  OPEN
+  CLOSED
+  COMPLETED
+  CANCELLED
+}
+
+enum ReservationStatus {
+  RESERVED
+  PAID
+  CANCELLED
+}
+
 model User {
-  id          Int      @id @default(autoincrement())
-  username    String
-  email       String   @unique
-  password    String
+  id        Int      @id @default(autoincrement())
 
-  profileImage String?
-  phone        String?
+  username  String
+  email     String   @unique
+  password  String
 
-  role UserRole @default(USER)
+  phone     String?
+  avatar    String?
+
+  role      UserRole @default(USER)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -36,89 +50,118 @@ model User {
 
 
 model KpopGroup {
-  id              Int      @id @default(autoincrement())
-  name            String
-  memberCount     Int
+  id          Int      @id @default(autoincrement())
 
+  name        String   @unique
+  memberCount Int
   imageUrl String?
 
+  createdAt   DateTime @default(now())
+
   members Member[]
-  albums  Album[]
+  albums Album[]
 }
 
 
 model Member {
   id        Int @id @default(autoincrement())
+
   name      String
 
-  imageUrl String?
+  imageUrl  String?
 
-  groupId Int
-  group   KpopGroup @relation(fields: [groupId], references: [id])
+  groupId   Int
+  group     KpopGroup @relation(fields: [groupId], references: [id])
 
   slots GroupOrderSlot[]
 }
 
 
 model Album {
-  id          Int @id @default(autoincrement())
-  name        String
-  version     String?
+  id Int @id @default(autoincrement())
+
+  name String
+
+  version String?
+
+  coverImage String?
+
   releaseDate DateTime?
 
   groupId Int
-  group   KpopGroup @relation(fields: [groupId], references: [id])
+  group KpopGroup @relation(fields: [groupId], references: [id])
 
   groupOrders GroupOrder[]
 }
 
 
 model Store {
-  id   Int @id @default(autoincrement())
-  name String
+  id Int @id @default(autoincrement())
+
+  name String @unique
+
+  logo String?
 
   groupOrders GroupOrder[]
 }
 
 
 model GroupOrder {
-  id        Int @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
+  title String
+
+  pobEvent String
 
   albumId Int
-  album   Album @relation(fields: [albumId], references: [id])
+  album Album @relation(fields: [albumId], references: [id])
 
   storeId Int
-  store   Store @relation(fields: [storeId], references: [id])
+  store Store @relation(fields: [storeId], references: [id])
+
+  price Decimal @db.Decimal(10,2)
 
   deadline DateTime
-  status   String
+
+  totalSlots Int
+
+  reservedSlots Int @default(0)
+
+  notes String?
+
+  status GroupOrderStatus @default(OPEN)
+
+  createdAt DateTime @default(now())
 
   slots GroupOrderSlot[]
 }
 
 
 model GroupOrderSlot {
+
   id Int @id @default(autoincrement())
 
   groupOrderId Int
-  groupOrder   GroupOrder @relation(fields: [groupOrderId], references: [id])
+  groupOrder GroupOrder @relation(fields:[groupOrderId], references:[id])
 
   memberId Int
-  member   Member @relation(fields: [memberId], references: [id])
+  member Member @relation(fields:[memberId], references:[id])
 
   reservation Reservation?
 }
 
 
 model Reservation {
+
   id Int @id @default(autoincrement())
 
   userId Int
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields:[userId], references:[id])
 
   slotId Int @unique
-  slot GroupOrderSlot @relation(fields: [slotId], references: [id])
+  slot GroupOrderSlot @relation(fields:[slotId], references:[id])
 
-  status String
+  status ReservationStatus @default(RESERVED)
+
   createdAt DateTime @default(now())
 }

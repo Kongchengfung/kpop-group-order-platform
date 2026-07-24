@@ -15,6 +15,7 @@ router.post(
     memberController.createMember
 );
 
+//bulk create members for a group
 router.post(
     "/group/:groupId",
     protect,
